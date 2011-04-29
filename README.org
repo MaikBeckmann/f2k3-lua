@@ -24,7 +24,7 @@ CMake, a C compiler and a fortran compiler that supports enough f2k3.
 
 *** Configure and build your own software
 If you use cmake, your CMakeLists.txt looks roughly like this
-#+begin_src cmake
+#+begin_example
   cmake_minimum_required(VERSION 2.6)
   project(foo C Fortran)
   
@@ -34,7 +34,7 @@ If you use cmake, your CMakeLists.txt looks roughly like this
   
   add_executable(foo test.f90)
   target_link_libraries(foo ${f2k3_lua_simple_LIBRARIES})
-#+end_src
+#+end_example
 You can build it now via
 #+begin_src sh
   mkdir build && cd build
@@ -47,7 +47,6 @@ CMAKE_PREFIX_PATH tells cmake where to look for f2k3_lua_simple.
 When you configure f2k3 itself and it can't find lua, then this it
 tells you
 #+begin_src sh
-
   CMake Error at
     /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:91
     (MESSAGE): Could NOT find Lua51 (missing: LUA_LIBRARIES
