@@ -1,3 +1,6 @@
+! Copyright (C) 2011 by the f2k3-lua authors, see AUTHORS file.
+! Licensed under the MIT license, see LICENSE file.
+
 MODULE lua_c_interfaces_simple
 INTERFACE
   !> LUALIB_API lua_State *(luaL_newstate) (void);

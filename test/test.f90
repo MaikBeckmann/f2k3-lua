@@ -1,3 +1,6 @@
+! Copyright (C) 2011 by the f2k3-lua authors, see AUTHORS file.
+! Licensed under the MIT license, see LICENSE file.
+
 PROGRAM test
   USE f2k3_lua_simple
   USE ISO_C_BINDING
