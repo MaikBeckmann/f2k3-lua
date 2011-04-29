@@ -5,12 +5,17 @@ include_directories(
   ${LUA_INCLUDE_DIR}
 )
 
-add_library(f2k3lua
+add_library(${PROJECT_NAME}
   clua.c
   flua.f90
   lua_c_interfaces.f90
 )
 
-target_link_libraries(f2k3lua
+target_link_libraries(f2k3_lua_simple
   ${LUA_LIBRARIES}
+)
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}-targets
+  ${DEFAULT_INSTALL_DESTINATIONS} 
 )

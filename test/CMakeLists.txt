@@ -6,5 +6,5 @@ include_directories(
 )
 add_executable(test test.f90)
 target_link_libraries(test
-  f2k3lua  
+  ${PROJECT_NAME}
 )
