@@ -1,12 +1,12 @@
 * f2k3 lua bindings - simple
 
 ** What is meant by `simple'?
-This API provided in the `simple' branch of f2k3 is meant to serve the
-needs of using lua a language for configuration files and nothing
+This API provided in the `simple' branch of f2k3-lua is meant to serve
+the needs of using lua a language for configuration files and nothing
 else.
 
 ** What can I do with it?
-After the configuration files was executed, you can query for
+After the configuration file was executed, you can query for
 variables that hold the following data types
  - strings
  - numbers
