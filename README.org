@@ -12,7 +12,10 @@ variables that hold the following data types
  - numbers
  - Tables that are composed using numbers and strings
   
-** TODO
+** TODO What has to be done
+*** Proper installation 
+Right now it just builds but it doesn't produce something usable
+outside the build tree.
 
 # ** COMMENT Common build errors
 # #+begin_src shell
