@@ -14,63 +14,53 @@ variables that hold the following data types
   
 ** Build instructions
 *** Configure, build and install f2k3-lua-simple
-#+begin_src sh
-  mkdir build && cd build
-  cmake ../ -DCMAKE_INSTALL_PREFIX=/tmp/f2k3_test
-  make install
-#+end_src
+: mkdir build && cd build
+: cmake ../ -DCMAKE_INSTALL_PREFIX=/tmp/f2k3_test
+: make install
 What do we need to build this package:
 CMake, a C compiler and a fortran compiler that supports enough f2k3.
 
 *** Configure and build your own software
 If you use cmake, your CMakeLists.txt looks roughly like this
-#+begin_example
-  cmake_minimum_required(VERSION 2.6)
-  project(foo C Fortran)
-  
-  find_package(f2k3_lua_simple REQUIRED)
-  
-  include_directories(${f2k3_lua_simple_INCLUDE_DIRS})
-  
-  add_executable(foo test.f90)
-  target_link_libraries(foo ${f2k3_lua_simple_LIBRARIES})
-#+end_example
+: cmake_minimum_required(VERSION 2.6)
+: project(foo C Fortran)
+: 
+: find_package(f2k3_lua_simple REQUIRED)
+: 
+: include_directories(${f2k3_lua_simple_INCLUDE_DIRS})
+: 
+: add_executable(foo test.f90)
+: target_link_libraries(foo ${f2k3_lua_simple_LIBRARIES})
 You can build it now via
-#+begin_src sh
-  mkdir build && cd build
-  cmake ../ -DCMAKE_PREFIX_PATH=/tmp/f2k3_test
-  make
-#+end_src
+: mkdir build && cd build
+: cmake ../ -DCMAKE_PREFIX_PATH=/tmp/f2k3_test
+: make
 CMAKE_PREFIX_PATH tells cmake where to look for f2k3_lua_simple.
 
 *** Common build errors
 When you configure f2k3 itself and it can't find lua, then this it
 tells you
-#+begin_src sh
-  CMake Error at
-    /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:91
-    (MESSAGE): Could NOT find Lua51 (missing: LUA_LIBRARIES
-    LUA_INCLUDE_DIR) Call Stack (most recent call first):
-    /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:252
-    (_FPHSA_FAILURE_MESSAGE)
-    /usr/share/cmake-2.8/Modules/FindLua51.cmake:72
-    (FIND_PACKAGE_HANDLE_STANDARD_ARGS) CMakeLists.txt:4 (find_package
-#+end_src
+: CMake Error at
+:   /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:91
+:   (MESSAGE): Could NOT find Lua51 (missing: LUA_LIBRARIES
+:   LUA_INCLUDE_DIR) Call Stack (most recent call first):
+:   /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:252
+:   (_FPHSA_FAILURE_MESSAGE)
+:   /usr/share/cmake-2.8/Modules/FindLua51.cmake:72
+:   (FIND_PACKAGE_HANDLE_STANDARD_ARGS) CMakeLists.txt:4 (find_package
 
 If your own cmake build script can't find f2k3_lua_simple, then this
 is what cmake tells you
-#+begin_src sh
-CMake Error at CMakeLists.txt:4 (find_package):
-  Could not find module Findf2k3_lua_simple.cmake or a configuration file for
-  package f2k3_lua_simple.
-
-  Adjust CMAKE_MODULE_PATH to find Findf2k3_lua_simple.cmake or set
-  f2k3_lua_simple_DIR to the directory containing a CMake configuration file
-  for f2k3_lua_simple.  The file will have one of the following names:
-
-    f2k3_lua_simpleConfig.cmake
-    f2k3_lua_simple-config.cmake
-#+end_src
+: CMake Error at CMakeLists.txt:4 (find_package):
+:   Could not find module Findf2k3_lua_simple.cmake or a configuration file for
+:   package f2k3_lua_simple.
+: 
+:   Adjust CMAKE_MODULE_PATH to find Findf2k3_lua_simple.cmake or set
+:   f2k3_lua_simple_DIR to the directory containing a CMake configuration file
+:   for f2k3_lua_simple.  The file will have one of the following names:
+: 
+:     f2k3_lua_simpleConfig.cmake
+:     f2k3_lua_simple-config.cmake
 
 ** What is it licensed under?
 MIT, see the LICENSE file
