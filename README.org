@@ -1,15 +1,15 @@
 #+Title: f2k3 lua bindings - simple
 
 * What is meant by `simple'?
-This API proided in the `simple' branch of f2k3 is meant to serve the
+This API provided in the `simple' branch of f2k3 is meant to serve the
 needs of using lua a language for configuration files and nothing
 else.
 
 * What can I do with it?
 After the configuration files was executed, you can query for
-variabes that hold the following data types
+variables that hold the following data types
  - strings
- - sumbers
+ - numbers
  - Tables that are composed using numbers and strings
   
 
