@@ -16,6 +16,8 @@ variables that hold the following data types
 *** Proper installation 
 Right now it just builds but it doesn't produce something usable
 outside the build tree.
+*** Build instructions
+CMake, a C compiler and a fortran compiler that supports enough f2k3.
 
 # ** COMMENT Common build errors
 # #+begin_src shell
@@ -28,3 +30,5 @@ outside the build tree.
 #   /usr/share/cmake-2.8/Modules/FindLua51.cmake:72
 #   (FIND_PACKAGE_HANDLE_STANDARD_ARGS) CMakeLists.txt:4 (find_package
 # #+end_src
+** What is it licensed under?
+MIT, see the LICENSE file
