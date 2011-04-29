@@ -12,6 +12,11 @@ set(CMAKE_Fortran_MODULE_DIRECTORY "${PROJECT_BINARY_DIR}/include")
 add_subdirectory(src)
 add_subdirectory(test)
 
+option(f2k3_BUILD_DOCS "Build docs via Doxygen" on)
+if(f2k3_BUILD_DOCS)
+  add_subdirectory(doc)
+endif()
+
 install(EXPORT ${PROJECT_NAME}-targets
   DESTINATION lib/${PROJECT_NAME}/cmake/
 )
