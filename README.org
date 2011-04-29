@@ -1,0 +1,26 @@
+#+Title: f2k3 lua bindings - simple
+
+* What is meant by `simple'?
+This API proided in the `simple' branch of f2k3 is meant to serve the
+needs of using lua a language for configuration files and nothing
+else.
+
+* What can I do with it?
+After the configuration files was executed, you can query for
+variabes that hold the following data types
+ - strings
+ - sumbers
+ - Tables that are composed using numbers and strings
+  
+
+* COMMENT Common build errors
+#+begin_src shell
+CMake Error at
+  /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:91
+  (MESSAGE): Could NOT find Lua51 (missing: LUA_LIBRARIES
+  LUA_INCLUDE_DIR) Call Stack (most recent call first):
+  /usr/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake:252
+  (_FPHSA_FAILURE_MESSAGE)
+  /usr/share/cmake-2.8/Modules/FindLua51.cmake:72
+  (FIND_PACKAGE_HANDLE_STANDARD_ARGS) CMakeLists.txt:4 (find_package
+#+end_src
