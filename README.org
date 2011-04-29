@@ -64,3 +64,7 @@ is what cmake tells you
 
 ** What is it licensed under?
 MIT, see the LICENSE file
+** The TODO list
+ - docs
+ - docs
+ - guess what?
