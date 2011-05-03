@@ -19,7 +19,9 @@
     	test-align: center;
     	min-width: 640px;
     }
+
     h1, h2, h3 { color: #555}
+
     #content {
 	background: none repeat scroll 0 0 #FFFFFF;
     	width: 600px;
@@ -40,7 +42,7 @@
     }
 
     a {
-        color: inherit;
+	color: #0066CC;
         font: inherit;
         background-color: inherit;
         text-decoration: inherit;
@@ -50,6 +52,10 @@
         text-decoration: underline;
     }
 
+    a:visited {
+	text-decoration: none; 
+	color: #743399
+    } 
 
     #table-of-contents {
 	font-size: 100%;
