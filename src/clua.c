@@ -82,6 +82,12 @@ int f2k3lua_lua_istable(lua_State *L, int n)
   return lua_istable(L, n);
 }
 
+int f2k3lua_lua_isnil(lua_State *L, int n)
+{
+  return lua_isnil(L, n);
+}
+
+
 
 void f2k3lua_lua_pop(lua_State *L, int n)
 {

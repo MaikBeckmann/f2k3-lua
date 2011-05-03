@@ -44,8 +44,8 @@ INTERFACE
     TYPE(C_PTR), VALUE :: L
     CHARACTER(KIND=C_CHAR, LEN=1), DIMENSION(*) :: k
   END SUBROUTINE lua_setglobal_c
-  !
-  !
+
+
   !> int f2k3lua_lua_istable(lua_State *L, int n);
   FUNCTION lua_istable_c(L, n) BIND(C, name="f2k3lua_lua_istable")
     USE ISO_C_BINDING
@@ -54,8 +54,16 @@ INTERFACE
     INTEGER(KIND=C_INT), VALUE :: n
     INTEGER(KIND=C_INT) :: lua_istable_c
   END FUNCTION lua_istable_c
-  !
-  !
+
+  !> int f2k3lua_lua_isnil(lua_State *L, int n);
+  FUNCTION lua_isnil_c(L, n) BIND(C, name="f2k3lua_lua_isnil")
+    USE ISO_C_BINDING
+    IMPLICIT NONE
+    TYPE(C_PTR), VALUE :: L
+    INTEGER(KIND=C_INT), VALUE :: n
+    INTEGER(KIND=C_INT) :: lua_isnil_c
+  END FUNCTION lua_isnil_c
+
   ! LUA_API int (lua_isstring) (lua_State *L, int idx);
   FUNCTION lua_isstring_c(L, n) BIND(C, name="lua_isstring")
     USE ISO_C_BINDING

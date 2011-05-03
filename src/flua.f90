@@ -130,10 +130,20 @@ FUNCTION lua_istable(L, n)
   TYPE(C_PTR), INTENT(IN) :: L
   INTEGER, INTENT(IN) :: n
   LOGICAL :: lua_istable
-  !
+
   lua_istable = lua_istable_c(L,  n) /= 0
 END FUNCTION lua_istable
 
+FUNCTION lua_isnil(L, n)
+  USE ISO_C_BINDING, ONLY: C_PTR
+  USE lua_c_interfaces_simple, ONLY: lua_isnil_c
+  IMPLICIT NONE
+  TYPE(C_PTR), INTENT(IN) :: L
+  INTEGER, INTENT(IN) :: n
+  LOGICAL :: lua_isnil
+
+  lua_isnil = lua_isnil_c(L,  n) /= 0
+END FUNCTION lua_isnil
 
 FUNCTION lua_isstring(L, n)
   USE ISO_C_BINDING, ONLY: C_PTR
