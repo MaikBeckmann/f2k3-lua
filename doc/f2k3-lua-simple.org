@@ -1,0 +1,247 @@
+# Copyright (C) 2011 by the f2k3-lua authors, see AUTHORS file.
+# Licensed under the MIT license, see LICENSE file.
+
+
+#+Title: Fortran 2003 Lua - Simple API
+#+Author: Maik Beckmann &lt;beckmann.maik@googlemail.com&gt;
+#+Language: en
+#+Style: <link rel="stylesheet" type="text/css" href="org-mode.css"/>
+
+#+begin_abstract
+This document shows how to use Lua for configuration files in a
+Fortran 2003 program.  We start by instantiating a Lua VM, process a
+file with a single line that assigns a number to a variable and get
+this number in a Fortran REAL variable.  From there we successively
+extend the lua script and learn how to deserialize lua data structures
+into Fortran data structures.
+#+end_abstract
+
+* COMMENT Some Lua basics in C
+Since f2k3-lua-simple only implements a small subset of Lua's C-API
+we'll have to show the basics in C.  But don't fear, it's toy code and
+easy to read and understand.  
+
+** Stop and start the Lua VM
+The following will just create a new Lua state, which we have to use
+to communicate with the Lua VM, and just closes it right away.
+#+begin_src C
+  #include <lua.h>
+  #include <lauxlib.h>
+  int main(int argc, char *argv[])
+  {
+    lua_State *luaState;
+    luaState = luaL_newstate();
+    lua_close(luaState);
+    return 0;
+  }  
+#+end_src
+Not much to see here.  If you compile and run it via
+ : gcc noop.c -o noop -l lua
+ : ./noop
+exactly nothing happens, which is good insofar it doesn't crash.
+
+** The Stack, something you have to get used to
+One of the reasons why Lua's C implementation is so small and it's
+C-API quite simple is the way the Lua VM communicates with your
+program (regardless if C or Fortran): The Stack!
+
+What is a Stack? TODO
+
+
+* Start and stop the Lua VM
+#+begin_src f90 :tangle tangles/noop.f90
+  PROGRAM noop
+    USE f2k3_lua_simple
+    USE ISO_C_BINDING, ONLY: C_PTR
+
+    IMPLICIT NONE
+    TYPE(C_PTR) :: luaState
+
+    CALL luaL_newstate(luaState)
+    CALL lua_close(luaState)
+  END PROGRAM noop
+#+end_src
+which can be compiled, given that you are in =test/= and the build
+dir is =build/=
+ : gfortran noop.f90 -o noop -I ../buid/include \
+ :   -l lua -l f2k3_lua_simple -L ../../build/lib
+If you run it via =./noop= nothing should happen, which means it at
+least doesn't crash.
+
+* Feeding a file into the Lua VM
+#+begin_src f90 :tangle tangles/dofile.f90
+  PROGRAM dofile
+    USE f2k3_lua_simple
+    USE ISO_C_BINDING, ONLY: C_PTR
+
+    IMPLICIT NONE
+    TYPE(C_PTR) :: luaState
+    INTEGER :: iostat, file_exists, error
+    CHARACTER(len=4096) :: lua_error_msg = " "
+    REAL :: val
+
+    CALL luaL_newstate(luaState)
+  
+    CALL luaL_dofile(luaState, "conf.lua", error)
+    IF(error > 0) THEN
+      CALL lua_tostring(luaState, -1, lua_error_msg)
+      PRINT *, "[ERROR] Lua had problems processing the file:"
+      PRINT *, TRIM(lua_error_msg)
+    END IF
+
+    CALL lua_close(luaState)
+  END PROGRAM dofile      
+#+end_src
+You probaby wonder about =CALL lua_tostring(luaState, -1,
+lua_error_msg)=.  We'll get to this in the next section which is about
+the Lua stack and how to get things it holds into a Fortran variable.
+
+If we run =./dofile= and =conf.lua= contains valid Lua syntax, like
+ : foo = "bar"
+nothing will happen.  What's more interesting is what happens if Lua
+has problems processing the file content.  If =conf.lua= contains
+ : foo bar
+the output is
+ : [ERROR] Lua had problems processing this file:
+ : val.lua:1: '=' expected near 'bar'
+Note that Lua stops at the first error.  If a second invalid statement
+is appended
+ : foo bar
+ : buzz lightyear
+the output is still the same, since it doesn't even consider the
+second one.
+
+* The Lua Stack and how to get stuff from it
+** Stack basics
+So what is a stack?  I stack is simple way to store and manage data.
+Let exercise what a stack can do.  At first it's empty
+ : stack:
+If we *push* an element `a' to the stack it'll show up
+ : push a
+ : stack: |a|
+Now we *push* another two element `b' and `c' on it
+ : push b
+ : push c
+ : stack: |a|b|c|
+It works like stacking up a bunch of books.  Note that the last book
+you put (or pushed) on the book stack is on top.  In line with this
+analogy a non empty stack has always a *top* which holds the last
+element that has been pushed to it.  To remove things from a stack you
+*pop* the top
+ : pop
+ : stack: |a|b|
+Given that the stack looks like this again
+ : stack: |a|b|c|
+and we want to remove the =a=.  What you have to do is
+ : pop
+ : stack: |a|b|
+ : pop
+ : stack: |a|
+ : pop
+ : stack:
+ : push b
+ : stack: |b|
+ : push c
+ : stack: |b|c|
+Simple enough, but very verbose.  Moving elements in the stack around
+is evidently a quite lenghty operation.  Which bares the question:
+_why_ would anybody use a stack?  Why not a linked list where moving
+elements around is efficient and just takes a few operations?  The
+answer: A stack is as predictable as it gets.  If $N$ parties
+communicate via a stack all of them know that each of the other $N-1$
+parties can just
+ 1. push an element on the top
+ 2. pop the top element
+and look at the top element, which doesn't alter the stack.  Imagine
+that you are one of the parties and you'll get noticed everytime
+someone did something to the stack.  You know where to look at: the
+top.  If you'd got noticed that a linked list got changed, you'd
+bascially had to look at all elements to know what has been done to
+it.
+
+A stack makes things simple and is also a good example for that simple
+doesn't mean easy.
+
+Stacks are usually part of the internals of a code base. not part of
+an API.  Lua is quite unique in this. The upside is, again, that it
+simplyfies things.  Not only is the behavior of a single function call
+well definined, but also what happens between them.  There are no
+hidden pointers used by some other code that might invalidate by
+accident and make your program crash.  The downside, it's damn
+stateful and hence hard to debug.  Givem a function you wrote ages ago
+and it fails all the sudden.  You cannot just look at the values of
+the arguments in a debugger.  You cannot put some asserts in place
+that check if a pointer is properly set.  You always have to
+introspect the stack.  This introspection code will make a huge chunk
+of the code you'll write, as we are about to so see.
+
+** Working with the Lua stack
+#+begin_src f90 :tangle tangles/tonumber.f90
+  PROGRAM get_val
+    USE f2k3_lua_simple
+    USE ISO_C_BINDING, ONLY: C_PTR
+
+    IMPLICIT NONE
+    TYPE(C_PTR) :: luaState
+    INTEGER :: iostat, file_exists, error
+    CHARACTER(len=4096) :: lua_error_msg = " "
+    REAL :: val
+
+    CALL luaL_newstate(luaState)
+  
+    CALL luaL_dofile(luaState, "conf.lua", error)
+    IF(error > 0) THEN
+      CALL lua_tostring(luaState, -1, lua_error_msg)
+      PRINT *, "[ERROR] Lua had problems processing the file:"
+      PRINT *, TRIM(lua_error_msg)
+    END IF
+  
+    ! Ask Lua for the value of the variable `val'.  If there is no
+    ! variable named `val' the `nil' value will be pushed onto the
+    ! stack.
+    CALL lua_getglobal(luaState, "val")
+    !
+    IF( lua_isnil(luaState, -1) ) THEN
+      PRINT *, "[ERROR] `val' not found"
+      GOTO 9999
+    END IF
+  
+    ! So we found `var', but what if the value assigned to it wasn't a
+    ! number but i.e. a string.
+    IF(.NOT. lua_isnumber(luaState, -1) ) THEN
+      PRINT *, "[ERROR] `val' is expected to refer to a number"
+      GOTO 9999
+    END IF
+    val = lua_tonumber(luaState, -1)
+  
+    PRINT *, "val:", val
+  
+  9999 CONTINUE ! house keeping  
+    CALL lua_close(luaState)
+  END PROGRAM get_val     
+#+end_src
+
+Once the file has be processed by the Lua VM it holds the values we
+want.  We instruct Lua to take a disired value out of the VM and push
+it on the stack.
+ : stack: 
+ : CALL lua_getglobal(luaState, "val") ! push 42
+ : stack: |42|
+We then take this value and pop it from the stack
+ : stack: |42|
+ : val = lua_tonumber(luaState, -1) ! pop
+ : stack:
+We'll get to the =-1= soon.  So the communication works like this
+ : Lua VM -> stack <- our code
+
+Now regarding the =-1= TODO: read the lua docs and try to put it into
+simple words.sc
+
+* Copyright and license of this document
+Copyright (C) 2011 by the f2k3-lua authors, see AUTHORS file.
+Licensed under the MIT license, see LICENSE file.
+
+* COMMENT Tangle
+# #+begin_src f90 :tangle tangles/noop.f90 :noweb yes
+# <<>>
+# #+end_src
